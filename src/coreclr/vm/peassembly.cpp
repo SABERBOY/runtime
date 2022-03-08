@@ -710,7 +710,14 @@ PEAssembly::PEAssembly(
     // m_pMDImport can be external
     // Make sure this is an assembly
     if (!m_pMDImport->IsValidToken(TokenFromRid(1, mdtAssembly)))
+    {
+        wprintf(
+            W("ASSEMBLY_EXPECTED: size = %I64x; uncompressed = %I64x; name = %s"),
+            pPEImage->GetSize(),
+            pPEImage->GetUncompressedSize(),
+            pPEImage->GetPathForErrorMessages());
         ThrowHR(COR_E_ASSEMBLYEXPECTED);
+    }
 
     // Verify name eagerly
     LPCUTF8 szName = GetSimpleName();
