@@ -711,11 +711,14 @@ PEAssembly::PEAssembly(
     // Make sure this is an assembly
     if (!m_pMDImport->IsValidToken(TokenFromRid(1, mdtAssembly)))
     {
-        wprintf(
-            W("ASSEMBLY_EXPECTED: size = %I64x; uncompressed = %I64x; name = %s"),
+        SString fatalErrorString;
+        fatalErrorString.Printf(
+            W("ASSEMBLY_EXPECTED: size = %I64x; uncompressed = %I64x; name = %s\n"),
             pPEImage->GetSize(),
             pPEImage->GetUncompressedSize(),
             pPEImage->GetPathForErrorMessages());
+        PrintToStdErrW(fatalErrorString.GetUnicode());
+
         ThrowHR(COR_E_ASSEMBLYEXPECTED);
     }
 
