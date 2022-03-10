@@ -691,8 +691,12 @@ PEAssembly::PEAssembly(
         pPEImage->AddRef();
         // We require an open layout for the file.
         // Most likely we have one already, just make sure we have one.
-        pPEImage->GetOrCreateLayout(PEImageLayout::LAYOUT_ANY);
+        PTR_PEImageLayout layout = pPEImage->GetOrCreateLayout(PEImageLayout::LAYOUT_ANY);
         m_PEImage = pPEImage;
+
+        SString peAssemblyString;
+        peAssemblyString.Printf(W("PEAssembly: size = %I64d; name = %s\n"), (int64_t)layout->GetSize(), pPEImage->GetPathForErrorMessages());
+        PrintToStdOutW(peAssemblyString.GetUnicode());
     }
 
     // Open metadata eagerly to minimize failure windows
@@ -711,14 +715,6 @@ PEAssembly::PEAssembly(
     // Make sure this is an assembly
     if (!m_pMDImport->IsValidToken(TokenFromRid(1, mdtAssembly)))
     {
-        SString fatalErrorString;
-        fatalErrorString.Printf(
-            W("ASSEMBLY_EXPECTED: size = %I64x; uncompressed = %I64x; name = %s\n"),
-            pPEImage->GetSize(),
-            pPEImage->GetUncompressedSize(),
-            pPEImage->GetPathForErrorMessages());
-        PrintToStdErrW(fatalErrorString.GetUnicode());
-
         ThrowHR(COR_E_ASSEMBLYEXPECTED);
     }
 
