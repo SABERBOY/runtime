@@ -691,7 +691,7 @@ PEAssembly::PEAssembly(
         pPEImage->AddRef();
         // We require an open layout for the file.
         // Most likely we have one already, just make sure we have one.
-        PTR_PEImageLayout layout = pPEImage->GetOrCreateLayout(PEImageLayout::LAYOUT_ANY);
+        pPEImage->GetOrCreateLayout(PEImageLayout::LAYOUT_ANY);
         m_PEImage = pPEImage;
     }
 
@@ -711,6 +711,7 @@ PEAssembly::PEAssembly(
     // Make sure this is an assembly
     if (!m_pMDImport->IsValidToken(TokenFromRid(1, mdtAssembly)))
     {
+        PTR_PEImageLayout layout = pPEImage->GetOrCreateLayout(PEImageLayout::LAYOUT_ANY);
         SString peAssemblyString;
         peAssemblyString.Printf(W("PEAssembly: size = %I64d; name = %s\n"), (int64_t)layout->GetSize(), pPEImage->GetPathForErrorMessages());
         PrintToStdOutW(peAssemblyString.GetUnicode());
