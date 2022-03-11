@@ -384,11 +384,19 @@ void PEImage::OpenMDImport()
                                                                GetPath().GetUnicode());
 #endif // METADATATRACKER_ENABLED
 
-        IfFailThrow(GetMetaDataInternalInterface((void *) pMeta,
+        HRESULT hr = GetMetaDataInternalInterface((void *) pMeta,
                                                  cMeta,
                                                  ofRead,
                                                  IID_IMDInternalImport,
-                                                 (void **) &m_pNewImport));
+                                                 (void **) &m_pNewImport);
+                                                 
+        if (FAILED(hr))
+        {
+            PTR_PEImageLayout layout = GetOrCreateLayout(PEImageLayout::LAYOUT_ANY);
+            SString peAssemblyString;
+            peAssemblyString.Printf(W("HR %08x: size = %I64d; name = %s\n"), hr, (int64_t)layout->GetSize(), GetPathForErrorMessages());
+            IfFailThrow(hr);
+        }
 
         if(FastInterlockCompareExchangePointer(&m_pMDImport, m_pNewImport, NULL))
         {
